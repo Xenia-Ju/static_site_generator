@@ -13,7 +13,7 @@ class HTMLNode():
             return ""
         result = ""
         for key, value in self.props.items():
-            result += f" {key}={value}"
+            result += f" {key}=\"{value}\""
         return result
         
     def __repr__(self):
@@ -22,3 +22,25 @@ class HTMLNode():
                 f"value = {self.value}\n"
                 f"children = {self.children}\n"
                 f"attributes ={self.props_to_html()}")
+
+            
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, props=None):
+        super().__init__(tag=tag, value=value, children=None, props=props)
+    
+    def to_html(self):
+        if not self.value:
+            raise ValueError
+        if not self.tag:
+            return self.value
+        html_string = ("<" + self.tag + self.props_to_html() + ">" 
+                       + self.value 
+                       + "</" + self.tag + ">")
+        return html_string
+    
+    def __repr__(self):
+        return (f"Leafnode:\n"
+                f"tag = {self.tag}\n"
+                f"value = {self.value}\n"
+                f"attributes ={self.props_to_html()}")
+
