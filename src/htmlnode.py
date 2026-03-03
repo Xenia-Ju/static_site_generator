@@ -44,3 +44,36 @@ class LeafNode(HTMLNode):
                 f"value = {self.value}\n"
                 f"attributes ={self.props_to_html()}")
 
+
+class ParentNode(HTMLNode):
+
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, value=None, children=children, props=props)
+
+    def to_html(self):
+        if not self.tag:
+            raise ValueError
+        if not self.children:
+            raise ValueError
+        html_children = []
+        for child in self.children:
+            html_children.append(child.to_html())
+        html_string = ("<" + self.tag + self.props_to_html() + ">" 
+                       + "".join(html_children) 
+                       + "</" + self.tag + ">")
+        return html_string
+    
+
+
+node = ParentNode(
+    "p",
+    [
+        LeafNode("b", "Bold text"),
+        LeafNode(None, "Normal text"),
+        LeafNode("i", "italic text"),
+        LeafNode(None, "Normal text"),
+    ],
+)
+
+print(node.to_html())
+
