@@ -63,17 +63,14 @@ class ParentNode(HTMLNode):
                        + "</" + self.tag + ">")
         return html_string
     
+    def __repr__(self):
+        children_repr = "" 
+    #    print(self.children)
+        if self.children:
+            for children in self.children:
+                children_repr = children_repr + " ; " + children.value
+        return (f"Parentnode:\n"
+                f"tag = {self.tag}\n"f"attributes ={self.props_to_html()}"
+                f"children ={children_repr}\n")
 
-
-node = ParentNode(
-    "p",
-    [
-        LeafNode("b", "Bold text"),
-        LeafNode(None, "Normal text"),
-        LeafNode("i", "italic text"),
-        LeafNode(None, "Normal text"),
-    ],
-)
-
-print(node.to_html())
 

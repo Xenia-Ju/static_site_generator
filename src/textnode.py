@@ -1,8 +1,9 @@
 from enum import Enum
+from htmlnode import *
 
 class TextType(Enum):
     
-    PLAIN = "text"
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
@@ -23,8 +24,9 @@ class TextNode():
         if self.url != other.url:
             return False
         return True
-    
+
+
     def __repr__(self):
         # TextNode(TEXT, TEXT_TYPE, URL)
-        return(f"TTextNode({self.text}, {self.text_type.value}, {str(self.url)})")
+        return(f"TextNode({self.text}, {self.text_type.value}, {str(self.url)})")
 
