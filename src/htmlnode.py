@@ -65,7 +65,6 @@ class ParentNode(HTMLNode):
     
     def __repr__(self):
         children_repr = "" 
-    #    print(self.children)
         if self.children:
             for children in self.children:
                 children_repr = children_repr + " ; " + children.value
