@@ -248,7 +248,40 @@ class test_text_to_textnodes(unittest.TestCase):
                         TextNode("link", TextType.LINK, "https://boot.dev"),
                     ]
         self.assertEqual(text_to_textnodes(text), expected)
+        
+class test_markdown_to_blocks(unittest.TestCase):
 
+    def test_empty_markdown(self):
+        text = ""
+        expected = []
+        self.assertEqual(markdown_to_blocks(text), expected)
 
+    def test_one_block_multiple_lines(self):
+        text = "- This is the first list item in a list block\n- This is a list item\n- This is another list item"
+        expected = ["- This is the first list item in a list block\n- This is a list item\n- This is another list item"]
+        self.assertEqual(markdown_to_blocks(text), expected)
+
+    def test_one_block_multiple_lines_unstriped(self):
+        text = "   - This is the first list item in a list block\n- This is a list item    \n    - This is another list item    "
+        expected = ["- This is the first list item in a list block\n- This is a list item\n- This is another list item"]
+        self.assertEqual(markdown_to_blocks(text), expected)
+
+    def test_one_block_multiple_lines_with_empty_lines(self):
+        text = "\n- This is the first list item in a list block\n- This is a list item\n- This is another list item\n"
+        expected = ["- This is the first list item in a list block\n- This is a list item\n- This is another list item"]
+        self.assertEqual(markdown_to_blocks(text), expected)
+
+    def test_multiple_blocks(self):
+        text = """# This is a heading
+
+This is a paragraph of text. It has some **bold** and _italic_ words inside of it.
+
+- This is the first list item in a list block
+- This is a list item
+- This is another list item"""
+        expected =['# This is a heading',
+                   'This is a paragraph of text. It has some **bold** and _italic_ words inside of it.',
+                   '- This is the first list item in a list block\n- This is a list item\n- This is another list item']
+        self.assertEqual(markdown_to_blocks(text), expected)
 if __name__ == "__main__":
     unittest.main()

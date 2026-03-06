@@ -99,3 +99,19 @@ def text_to_textnodes(text):
     text_nodes = split_nodes_delimiter(text_nodes, "`" , TextType.CODE)
     return text_nodes
 
+
+def markdown_to_blocks(markdown):
+    blocks = []
+    current = []
+    for line in markdown.split("\n"):
+        line = line.strip()
+        if not line:
+            if current:
+                blocks.append("\n".join(current))
+                current = []
+            continue
+        current.append(line)
+    if current:
+        blocks.append("\n".join(current))
+    return blocks
+
