@@ -1,6 +1,7 @@
 from textnode import *
 from htmlnode import *
 import re
+from enum import Enum
 
 
 def text_node_to_html_node(textnode):
@@ -115,3 +116,31 @@ def markdown_to_blocks(markdown):
         blocks.append("\n".join(current))
     return blocks
 
+
+class BlockType(Enum):
+    PARAGRAPH = "paragraph"
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED = "unordered_list"
+    ORDERED = "ordered_list"
+
+def block_to_block_type(block):
+    if not block:
+        return BlockType.PARAGRAPH
+    if re.findall(r"^#{1,6} ", block):
+        return BlockType.HEADING
+    if re.findall(r"^```", block) and re.findall(r"```$", block):
+        return BlockType.CODE
+    if block[0] == ">":
+        return BlockType.QUOTE
+    if len(re.findall(r"^- ", block, re.M)) == len(block.split("\n")):
+        return BlockType.UNORDERED
+    if len(re.findall(r"^\d+. ", block, re.M)) == len(block.split("\n")):
+        check = re.findall(r"^\d+", block, re.M)
+        for i, j in enumerate(check, 1):
+            if str(i) != j:
+                print("here?")
+                return BlockType.PARAGRAPH
+        return BlockType.ORDERED
+    return BlockType.PARAGRAPH

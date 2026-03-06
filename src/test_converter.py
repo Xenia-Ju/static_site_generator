@@ -283,5 +283,49 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
                    'This is a paragraph of text. It has some **bold** and _italic_ words inside of it.',
                    '- This is the first list item in a list block\n- This is a list item\n- This is another list item']
         self.assertEqual(markdown_to_blocks(text), expected)
+
+class test_block_to_block_type(unittest.TestCase):
+
+    def test_empty_block(self):
+        self.assertEqual(block_to_block_type(""), BlockType.PARAGRAPH)
+
+    def test_paragraphs(self):
+        self.assertEqual(block_to_block_type("Just one line."), BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("This has\ntwo lines"), BlockType.PARAGRAPH)
+
+    def test_headings(self):
+        self.assertEqual(block_to_block_type("# this is a heading"),BlockType.HEADING)
+        self.assertEqual(block_to_block_type("#### this is a heading"),BlockType.HEADING)
+        self.assertEqual(block_to_block_type("###### this is a heading"),BlockType.HEADING)
+        self.assertEqual(block_to_block_type("####### this is not a heading"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("this ### is not a heading"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("First line.\n# This is not a heading"),BlockType.PARAGRAPH)
+        
+    def test_cod_block(self):
+        self.assertEqual(block_to_block_type("```This is a code```"),BlockType.CODE)
+        self.assertEqual(block_to_block_type("````This is a code````"),BlockType.CODE)
+        self.assertEqual(block_to_block_type("This is not a code```"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("```This is not a code"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("``This is not a code``"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("```This is\na code```"),BlockType.CODE)
+        self.assertEqual(block_to_block_type("```This is a code```\nBut not this"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("```This is a code```\n```more code.```"),BlockType.CODE)
+
+    def test_unordered(self):
+        self.assertEqual(block_to_block_type("- This is unordered list"),BlockType.UNORDERED)
+        self.assertEqual(block_to_block_type("-This is unordered list"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("- This\n- is\n- unordered\n- list"),BlockType.UNORDERED)
+        self.assertEqual(block_to_block_type("- This\n- is\n- unordered\n list"),BlockType.PARAGRAPH)
+
+    def test_ordered(self):
+        self.assertEqual(block_to_block_type("1. This is unordered list"),BlockType.ORDERED)
+        self.assertEqual(block_to_block_type("1.This is unordered list"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("0. This is unordered list"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("1. This\n2. is\n3. unordered\n4. list"),BlockType.ORDERED)
+        self.assertEqual(block_to_block_type("1. This\n2. is\n3. unordered\n list"),BlockType.PARAGRAPH)
+        self.assertEqual(block_to_block_type("1. This\n2. is\n3. unordered\n5. list"),BlockType.PARAGRAPH)
+
+
+
 if __name__ == "__main__":
     unittest.main()
