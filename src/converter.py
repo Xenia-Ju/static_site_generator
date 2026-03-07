@@ -144,3 +144,60 @@ def block_to_block_type(block):
                 return BlockType.PARAGRAPH
         return BlockType.ORDERED
     return BlockType.PARAGRAPH
+
+
+def markdown_to_html_node(markdown):
+    html_nodes = []
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        if block_type == BlockType.PARAGRAPH:
+            childnodes_t = text_to_textnodes(block)
+            childnodes = []
+            for child in childnodes_t:
+                childnodes.append(text_node_to_html_node(child))
+            node = ParentNode("p", childnodes)
+            html_nodes.append(node)
+        if block_type == BlockType.HEADING:
+            level = len(re.findall(r"^#{1,6} ", block)[0])
+            tag = "h" + str(level-1)
+            childnodes_t = text_to_textnodes(block[level:])
+            childnodes = []
+            for child in childnodes_t:
+                childnodes.append(text_node_to_html_node(child))
+            node = ParentNode(tag, childnodes)
+            html_nodes.append(node)
+        if block_type == BlockType.CODE:
+            childnode = LeafNode("code", block[3:-3])
+            node = ParentNode("pre", [childnode])
+            html_nodes.append(node)
+        if block_type == BlockType.UNORDERED:
+            linenodes = []
+            for line in block.split("\n"):
+                print(line)
+                childnodes_t = text_to_textnodes(line[2:])
+                childnodes = []
+                for child in childnodes_t:
+                    childnodes.append(text_node_to_html_node(child))
+                linenodes.append(ParentNode("li", childnodes))
+            node = ParentNode("ul", linenodes)
+            html_nodes.append(node)
+        if block_type == BlockType.ORDERED:
+            linenodes = []
+            for line in block.split("\n"):
+                exclusion = len(re.findall(r"^\d+. ", line)[0])
+                childnodes_t = text_to_textnodes(line[exclusion:])
+                childnodes = []
+                for child in childnodes_t:
+                    childnodes.append(text_node_to_html_node(child))
+                linenodes.append(ParentNode("li", childnodes))
+            node = ParentNode("ol", linenodes)
+            html_nodes.append(node)
+    return ParentNode("div", html_nodes)
+ 
+print("start")
+markdown = "- This is a \n- single test node"
+result = markdown_to_html_node(markdown)
+print(result.to_html())
+print("end")
+
