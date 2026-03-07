@@ -32,7 +32,7 @@ class test_text_node_to_html(unittest.TestCase):
     def test_text_to_html_link(self):
         node = TextNode("This îs a link", TextType.LINK, "HTTP")
         html_node = text_node_to_html_node(node)
-        expected = {"tag": "link", "value": "This îs a link", "children": None,"props": {"href": "HTTP"} }
+        expected = {"tag": "a", "value": "This îs a link", "children": None,"props": {"href": "HTTP"} }
         self.assertEqual(html_node.__dict__, expected)
 
     def test_text_to_html_image(self):
@@ -339,7 +339,7 @@ class test_markdown_to_html(unittest.TestCase):
 
     def test_paragraph_text_different_nodes(self):
         markdown = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        expected = "<div><p>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and a <link href=\"https://boot.dev\">link</link></p></div>"
+        expected = "<div><p>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and a <a href=\"https://boot.dev\">link</a></p></div>"
         self.assertEqual(markdown_to_html_node(markdown).to_html(), expected)
 
     def test_heading_text_only(self):
@@ -349,7 +349,7 @@ class test_markdown_to_html(unittest.TestCase):
 
     def test_heading_text_different_nodes(self):
         markdown = "## This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        expected = "<div><h2>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and a <link href=\"https://boot.dev\">link</link></h2></div>"
+        expected = "<div><h2>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and a <a href=\"https://boot.dev\">link</a></h2></div>"
         self.assertEqual(markdown_to_html_node(markdown).to_html(), expected)
 
     def test_code_text_only(self):
@@ -369,7 +369,7 @@ class test_markdown_to_html(unittest.TestCase):
 
     def test_unordered_text_different_nodes(self):
         markdown = "- This is **text** with \n- an _italic_ word and\n-  a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and\n-  a [link](https://boot.dev)"
-        expected = "<div><ul><li>This is <b>text</b> with</li><li>an <i>italic</i> word and</li><li> a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and</li><li> a <link href=\"https://boot.dev\">link</link></li></ul></div>"
+        expected = "<div><ul><li>This is <b>text</b> with</li><li>an <i>italic</i> word and</li><li> a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and</li><li> a <a href=\"https://boot.dev\">link</a></li></ul></div>"
         self.assertEqual(markdown_to_html_node(markdown).to_html(), expected)
 
     def test_ordered_text_only(self):
@@ -379,8 +379,19 @@ class test_markdown_to_html(unittest.TestCase):
 
     def test_ordered_text_different_nodes(self):
         markdown = "1. This is **text** with \n2. an _italic_ word and\n3.  a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and\n4.  a [link](https://boot.dev)"
-        expected = "<div><ol><li>This is <b>text</b> with</li><li>an <i>italic</i> word and</li><li> a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and</li><li> a <link href=\"https://boot.dev\">link</link></li></ol></div>"
+        expected = "<div><ol><li>This is <b>text</b> with</li><li>an <i>italic</i> word and</li><li> a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and</li><li> a <a href=\"https://boot.dev\">link</a></li></ol></div>"
         self.assertEqual(markdown_to_html_node(markdown).to_html(), expected)
+
+    def test_paragraph_text_only(self):
+        markdown = ">This is a single test node"
+        expected = "<div><blockquote>This is a single test node</blockquote></div>"
+        self.assertEqual(markdown_to_html_node(markdown).to_html(), expected)
+
+    def test_paragraph_text_different_nodes(self):
+        markdown = ">This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expected = "<div><blockquote>This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src=\"https://i.imgur.com/fJRm4Vk.jpeg\" alt=\"obi wan image\"></img> and a <a href=\"https://boot.dev\">link</a></blockquote></div>"
+        self.assertEqual(markdown_to_html_node(markdown).to_html(), expected)
+
 
 
 if __name__ == "__main__":

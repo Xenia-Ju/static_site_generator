@@ -15,7 +15,7 @@ def text_node_to_html_node(textnode):
         case TextType.CODE:
             return LeafNode("code", textnode.text)
         case TextType.LINK:
-            return LeafNode("link", textnode.text, props = {"href": textnode.url})
+            return LeafNode("a", textnode.text, props = {"href": textnode.url})
         case TextType.IMAGE:
             return LeafNode("img", "", props = {"src": textnode.url, "alt": textnode.text})
         case _:
@@ -174,7 +174,6 @@ def markdown_to_html_node(markdown):
         if block_type == BlockType.UNORDERED:
             linenodes = []
             for line in block.split("\n"):
-                print(line)
                 childnodes_t = text_to_textnodes(line[2:])
                 childnodes = []
                 for child in childnodes_t:
@@ -193,11 +192,14 @@ def markdown_to_html_node(markdown):
                 linenodes.append(ParentNode("li", childnodes))
             node = ParentNode("ol", linenodes)
             html_nodes.append(node)
+        if block_type == BlockType.QUOTE:
+            childnodes_t = text_to_textnodes(block[1:].strip())
+            childnodes = []
+            for child in childnodes_t:
+                childnodes.append(text_node_to_html_node(child))
+            node = ParentNode("blockquote", childnodes)
+            html_nodes.append(node)
     return ParentNode("div", html_nodes)
  
-print("start")
-markdown = "- This is a \n- single test node"
-result = markdown_to_html_node(markdown)
-print(result.to_html())
-print("end")
+
 

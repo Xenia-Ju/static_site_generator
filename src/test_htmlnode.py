@@ -82,8 +82,8 @@ class TestLeafNode(unittest.TestCase):
         
     def test_to_html_no_value_empty(self):
         node = LeafNode("p", "")
-        with self.assertRaises(ValueError):
-            node.to_html()
+        expected = "<p></p>"
+        self.assertEqual(node.to_html(), expected)
 
     def test_to_html_no_tag_none(self):
         node = LeafNode(None, "This is a paragraph of text.")
