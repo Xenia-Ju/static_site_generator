@@ -3,6 +3,7 @@ from htmlnode import *
 from generate_html import *
 import os
 import shutil
+import sys
 
 
 def copy_dictree(source, target):
@@ -15,7 +16,7 @@ def copy_dictree(source, target):
             os.mkdir(os.path.join(target, file))
             copy_dictree(path, os.path.join(target, file))
             
-def generate_pages_recursive(dir_content, template, dir_destination):
+def generate_pages_recursive(dir_content, template, dir_destination, basepath):
     content_content = os.listdir(dir_content)
     content_destination = os.listdir(dir_destination)
     for file in content_content:
@@ -24,18 +25,19 @@ def generate_pages_recursive(dir_content, template, dir_destination):
         path = os.path.join(dir_content, file)
         if not os.path.isfile(path):
             os.mkdir(os.path.join(dir_destination, file))
-            generate_pages_recursive(path, template, os.path.join(dir_destination, file))
+            generate_pages_recursive(path, template, os.path.join(dir_destination, file), basepath)
             continue
         if file.endswith(".md"):
-            generate_page(path, template, os.path.join(dir_destination, file[:-3]+".html"))
+            generate_page(path, template, os.path.join(dir_destination, file[:-3]+".html"), basepath)
         
 def main():
-    if os.path.exists("./public"):
-        shutil.rmtree("./public")
-    os.mkdir("./public")
-    copy_dictree("./static", "./public")
+    basepath = sys.argv[1] if sys.argv and len(sys.argv)>1 else "/"
 
-    generate_pages_recursive("./content", "template.html", "./public")
-    #generate_page("./content/index.md", template, "./public/index.html"))
-    
+    if os.path.exists("./docs"):
+        shutil.rmtree("./docs")
+    os.mkdir("./docs")
+    copy_dictree("./static", "./docs")
+
+    generate_pages_recursive("./content", "template.html", "./docs", basepath)
+
 main()
