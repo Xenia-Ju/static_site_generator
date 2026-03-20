@@ -29,10 +29,9 @@ def generate_pages_recursive(dir_content, template, dir_destination, basepath):
             continue
         if file.endswith(".md"):
             generate_page(path, template, os.path.join(dir_destination, file[:-3]+".html"), basepath)
-        
+
 def main():
     basepath = sys.argv[1] if sys.argv and len(sys.argv)>1 else "/"
-
     if os.path.exists("./docs"):
         shutil.rmtree("./docs")
     os.mkdir("./docs")
